@@ -1,0 +1,31 @@
+#!/bin/sh
+####  PBS preamble
+
+#PBS -N job_name
+
+# Change uniqname to your own uniqname
+#PBS -M uniqname@umich.edu
+#PBS -m abe
+
+# Change the number of cores (ppn=1), amount of memory, and walltime:
+#PBS -l nodes=1:ppn=1,mem=2000mb,walltime=01:00:00
+#PBS -j oe
+#PBS -V
+
+#PBS -A mdatascienceteam_flux
+#PBS -q flux
+#PBS -l qos=preempt
+
+####  End PBS preamble
+
+#  Show list of CPUs you ran on, if you're running under PBS
+if [ -n "$PBS_NODEFILE" ]; then cat $PBS_NODEFILE; fi
+
+#  Change to the directory you submitted from
+if [ -n "$PBS_O_WORKDIR" ]; then cd $PBS_O_WORKDIR; fi
+
+#  Load the modules you need
+module load epd
+
+#  Put your job commands here:
+echo "Hello, world"
