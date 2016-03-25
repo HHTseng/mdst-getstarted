@@ -3,6 +3,9 @@ local nValid = annot['valid']['nsamples']
 local batchSize = opt.batchSize
 local testBatchSize = 4 -- opt.testBatchSize
 local criterion = nn.CrossEntropyCriterion()
+if opt.gpu ~= -1 then
+   criterion:cuda()
+end
 
 for epoch = 1,opt.nEpochs do
 
@@ -12,8 +15,10 @@ for epoch = 1,opt.nEpochs do
 
    local trainErr = 0
    local trainAcc = 0
-
    local validAcc = 0
+
+   if opt.GPU ~= -1 then cutorch.synchronize() end
+   collectgarbage()
    
    -- Compute validation accuracy
    -- put model in eval mode
@@ -22,14 +27,14 @@ for epoch = 1,opt.nEpochs do
    for batch = 1,torch.floor(nValid/testBatchSize) do
       local inputs = torch.Tensor(testBatchSize, unpack(dataDim))
       local targets = torch.LongTensor(testBatchSize, 1):zero()
-      local examples = torch.range((batch-1)*testBatchSize+1, batch*testBatchSize)
-      for example = 1,testBatchSize do
-	 local exampleIdx = shuffle[examples[example]]
-	 local im = data['valid'][exampleIdx]:clone()
-	 inputs[example] = im
-	 local target = labels['valid'][exampleIdx]:clone()
-	 targets[example] = target+1
+
+      local examples = shuffle:narrow(1, (batch-1)*testBatchSize+1, testBatchSize)
+      inputs, targets = loadData('valid', examples, testBatchSize)
+      if opt.gpu ~= -1 then
+         inputs = inputsGPU:sub(1,testBatchSize):copy(inputs)
+	 targets = labelsGPU:sub(1,testBatchSize):copy(targets)
       end
+
       -- Forward step
       local output = model:forward(inputs)
       -- Compute accuracy
@@ -46,15 +51,11 @@ for epoch = 1,opt.nEpochs do
    for batch = 1,torch.floor(nTrain/batchSize) do
 
       print('Batch ' .. batch)
-      local inputs = torch.Tensor(batchSize, unpack(dataDim))
-      local targets = torch.LongTensor(batchSize, 1):zero()
-      local examples = torch.range((batch-1)*batchSize+1,batch*batchSize)
-      for example = 1,batchSize do
-	 local exampleIdx = shuffle[examples[example]]
-	 local im = data['train'][exampleIdx]:clone()
-	 inputs[example] = im
-	 local target = labels['train'][exampleIdx]:clone()
-	 targets[example] = target+1
+      local examples = shuffle:narrow(1, (batch-1)*batchSize+1, batchSize)
+      inputs, targets = loadData('train', examples, batchSize)
+      if opt.gpu ~= -1 then
+         inputs = inputsGPU:sub(1,batchSize):copy(inputs)
+	 targets = labelsGPU:sub(1,batchSize):copy(targets)
       end
 
       -- Forward step

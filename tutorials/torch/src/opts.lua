@@ -1,4 +1,4 @@
-projectDir = projectDir or '/scratch/jiadeng_flux/stroud/randomsearch'
+projectDir = '/scratch/jiadeng_flux/stroud/mdst-getstarted/tutorials/torch/'
 
 local M = { }
 
@@ -8,7 +8,7 @@ function M.parse(arg)
     cmd:text(' ---------- General options ------------------------------------')
     cmd:text()
     cmd:option('-dataDir',  projectDir .. '/data', 'Data directory')
-    cmd:option('-dataset',      'convex', 'Dataset choice rectangle | rectangle_im | convex')
+    cmd:option('-dataset',   'rectangle', 'Dataset choice rectangle | rectangles_im | convex')
     cmd:option('-manualSeed',         -1, 'Manually set RNG seed')
     cmd:option('-GPU',                -1, 'Default preferred GPU, if set to -1: no GPU')
     cmd:text()
@@ -44,9 +44,12 @@ function M.parse(arg)
     cmd:text(' ---------- Data options ---------------------------------------')
     cmd:text()
     cmd:option('-inputRes',           28, 'Input image resolution')
-    cmd:option('-nTrain',           6000, 'Number of training samples')
-    cmd:option('-nValid',           2000, 'Number of validation samples')
+    cmd:option('-nTrain',           1000, 'Number of training samples')
+    cmd:option('-nValid',            200, 'Number of validation samples')
     cmd:option('-nTest',           50000, 'Number of test samples')
+    cmd:text(' ---------- GPU options ----------------------------------------')
+    cmd:text()
+    cmd:option('-gpu',                -1, 'GPU to use (-1 for no GPU)')
     
     local opt = cmd:parse(arg or {})
     opt.dataDir = paths.concat(opt.dataDir, opt.dataset)

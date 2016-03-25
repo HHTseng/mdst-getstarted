@@ -25,7 +25,7 @@ opt = opts.parse(arg)
 --print('Saving everything to: ' .. opt.save)
 --os.execute('mkdir -p ' .. opt.save)
 
-if opt.GPU == -1 then
+if opt.gpu == -1 then
     -- Do not use a GPU
     nnlib = nn
 else
@@ -34,7 +34,7 @@ else
     require 'cunn'
     require 'cudnn'
     nnlib = cudnn
-    cutorch.setDevice(opt.GPU) -- by default, use GPU 1
+    cutorch.setDevice(opt.gpu) -- by default, use GPU 1
 end
 
 -- Training hyperparameters

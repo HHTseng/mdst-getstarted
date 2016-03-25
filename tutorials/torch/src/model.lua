@@ -1,20 +1,20 @@
 function convModule(inChannels, outChannels, filterSize, stride, pad)
    -- Bundle conv-norm-relu-dropout into a single module
    local conv = nn.Sequential()
-   conv:add(nn.SpatialConvolution(inChannels, outChannels,
+   conv:add(nnlib.SpatialConvolution(inChannels, outChannels,
 				  filterSize, filterSize,
 				  stride, stride,
 				  pad, pad))
    conv:add(nn.SpatialBatchNormalization(outChannels))
    if opt.activationFn == 'relu' then
-      conv:add(nn.ReLU(true))
+      conv:add(nnlib.ReLU(true))
    elseif opt.activationFn == 'sigmoid' then
-      conv:add(nn.Sigmoid())
+      conv:add(nnlib.Sigmoid())
    end
    if opt.poolingType == 'max' then
-      conv:add(nn.SpatialMaxPooling(2, 2, 2, 2))
+      conv:add(nnlib.SpatialMaxPooling(2, 2, 2, 2))
    elseif opt.poolingType == 'avg' then
-      conv:add(nn.SpatialAveragePooling(2, 2, 2, 2))
+      conv:add(nnlib.SpatialAveragePooling(2, 2, 2, 2))
    end
    conv:add(nn.Dropout(opt.dropoutRatio))
    return conv
@@ -26,9 +26,9 @@ function linearModule(inFeatures, outFeatures)
    linear:add(nn.Linear(inFeatures, outFeatures))
    linear:add(nn.BatchNormalization(outFeatures))
    if opt.activationFn == 'relu' then
-      linear:add(nn.ReLU(true))
+      linear:add(nnlib.ReLU(true))
    elseif opt.activationFn == 'sigmoid' then
-      linear:add(nn.Sigmoid())
+      linear:add(nnlib.Sigmoid())
    end
    linear:add(nn.Dropout(opt.dropoutRatio))
    return linear
@@ -49,5 +49,9 @@ model:add(linearModule(nFeat, opt.nHidden4))
 model:add(linearModule(opt.nHidden4, opt.nHidden5))
 
 model:add(nn.Linear(opt.nHidden5, 2))
-model:add(nn.Sigmoid())
-model:add(nn.SoftMax())
+model:add(nnlib.Sigmoid())
+model:add(nnlib.SoftMax())
+
+if opt.gpu ~= -1 then
+   model:cuda()
+end
