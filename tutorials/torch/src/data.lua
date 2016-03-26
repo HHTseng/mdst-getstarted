@@ -1,13 +1,17 @@
-nChannel = 1
 
+-- Default global vars
+nChannel = 1
 data = {}
 labels = {}
-
-
 dataDim = {nChannel, opt.inputRes, opt.inputRes}
 labelDim = {2}
 
+-- Load data and related functions
+
+dofile(opt.dataDir .. '/init.lua')
+
 -- Load training/val labels
+--[[
 local labelFileTrain = io.open(opt.dataDir .. '/annot_train.txt')
 io.input(labelFileTrain)
 local labelsRaw = string.split(io.read(), " ")
@@ -31,19 +35,14 @@ for i = 1,opt.nValid do
 end
 
 data['test'] = torch.Tensor({opt.nTest, 1, opt.inputRes, opt.inputRes})
+--]]
 
 
 
 
--- Define accuracy
-function accuracy(output, label)
-   maxs, indices = torch.max(output, 2)
-   return torch.sum(torch.eq(indices, label))/output:size()[1]
-end
 
 
-
--- Allocate memory
+-- Allocate memory (this should stay here)
 
 -- Preallocate memory for fast GPU
 if opt.gpu ~= -1 then
@@ -53,17 +52,24 @@ if opt.gpu ~= -1 then
 end
 
 
--- other
+-- Define some useful functions
 
-function loadData(set, idxs, batchSize)
+function loadBatch(set, idxs)
+   -- Returns a single minibatch of data with indices idxs
+
+   local batchSize = idxs:size()[1]
    local inputs = torch.Tensor(batchSize, unpack(dataDim))
    local targets = torch.LongTensor(batchSize,1)
    for example = 1,batchSize do
       local exampleIdx = idxs[example]
-      local im = data[set][exampleIdx]:clone()
-      inputs[example] = im
-      local target = labels[set][exampleIdx]
-      targets[example] = target+1
+      inputs[example] = data[set][exampleIdx]:clone()
+      targets[example] = labels[set][exampleIdx]
    end
-   return inputs, targets
+   return preprocess(inputs, targets) -- preprocess batch if needed
+end
+
+-- Define accuracy (move somewhere else)
+function accuracy(output, label)
+   maxs, indices = torch.max(output, 2)
+   return torch.sum(torch.eq(indices, label))/output:size()[1]
 end

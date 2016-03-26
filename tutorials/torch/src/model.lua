@@ -48,7 +48,7 @@ model:add(nn.View(nFeat))
 model:add(linearModule(nFeat, opt.nHidden4))
 model:add(linearModule(opt.nHidden4, opt.nHidden5))
 
-model:add(nn.Linear(opt.nHidden5, 2))
+model:add(nn.Linear(opt.nHidden5, nLabel))
 model:add(nnlib.Sigmoid())
 model:add(nnlib.SoftMax())
 

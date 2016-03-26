@@ -1,4 +1,4 @@
-projectDir = '/scratch/jiadeng_flux/stroud/mdst-getstarted/tutorials/torch/'
+--projectDir = '/scratch/jiadeng_flux/stroud/mdst-getstarted/tutorials/torch/'
 
 local M = { }
 
@@ -9,7 +9,7 @@ function M.parse(arg)
     cmd:text()
     cmd:option('-dataDir',  projectDir .. '/data', 'Data directory')
     cmd:option('-expDir',  projectDir .. '/exp', 'Experiment directory')
-    cmd:option('-dataset',      'convex', 'Dataset choice rectangle | rectangles_im | convex')
+    cmd:option('-dataset',      'mnist', 'Dataset choice rectangle | rectangles_im | convex | mnist')
     cmd:option('-manualSeed',         -1, 'Manually set RNG seed')
     cmd:option('-expName',     'myModel', 'Name of model to save') 
     cmd:text()
@@ -44,10 +44,10 @@ function M.parse(arg)
     cmd:text()
     cmd:text(' ---------- Data options ---------------------------------------')
     cmd:text()
-    cmd:option('-inputRes',           28, 'Input image resolution')
-    cmd:option('-nTrain',           6000, 'Number of training samples')
-    cmd:option('-nValid',           2000, 'Number of validation samples')
-    cmd:option('-nTest',           50000, 'Number of test samples')
+    cmd:option('-inputRes',           32, 'Input image resolution')
+    cmd:option('-nTrain',          50000, 'Number of training samples')
+    cmd:option('-nValid',          10000, 'Number of validation samples') -- Todo: change to frac
+    cmd:option('-nTest',           10000, 'Number of test samples')
     cmd:text()
     cmd:text(' ---------- GPU options ----------------------------------------')
     cmd:text()

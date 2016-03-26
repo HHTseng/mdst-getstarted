@@ -30,7 +30,7 @@ for epoch = 1,opt.nEpochs do
    for batch = 1,torch.floor(nTrain/batchSize) do
 
       local examples = shuffle:narrow(1, (batch-1)*batchSize+1, batchSize)
-      inputs, targets = loadData('train', examples, batchSize)
+      inputs, targets = loadBatch('train', examples, batchSize)
       if opt.gpu ~= -1 then
          inputs = inputsGPU:sub(1,batchSize):copy(inputs)
 	 targets = labelsGPU:sub(1,batchSize):copy(targets)
@@ -66,7 +66,7 @@ for epoch = 1,opt.nEpochs do
       local targets = torch.LongTensor(testBatchSize, 1):zero()
 
       local examples = shuffle:narrow(1, (batch-1)*testBatchSize+1, testBatchSize)
-      inputs, targets = loadData('valid', examples, testBatchSize)
+      inputs, targets = loadBatch('valid', examples, testBatchSize)
       if opt.gpu ~= -1 then
          inputs = inputsGPU:sub(1,testBatchSize):copy(inputs)
 	 targets = labelsGPU:sub(1,testBatchSize):copy(targets)
