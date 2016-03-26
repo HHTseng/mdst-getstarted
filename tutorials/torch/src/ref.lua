@@ -10,7 +10,7 @@ require 'nngraph'
 require 'image'
 
 --paths.dofile('img.lua')
---paths.dofile('eval.lua')
+paths.dofile('util/Logger.lua')
 
 torch.setdefaulttensortype('torch.DoubleTensor')
 
@@ -22,8 +22,10 @@ projectDir = os.getenv('HOME') .. '/mdst-getstarted/tutorials/torch/'
 local opts = paths.dofile('opts.lua')
 opt = opts.parse(arg)
 
---print('Saving everything to: ' .. opt.save)
---os.execute('mkdir -p ' .. opt.save)
+print('Saving everything to: ' .. opt.save)
+os.execute('mkdir -p ' .. opt.save)
+
+torch.save(opt.save .. '/options.t7', opt)
 
 if opt.gpu == -1 then
     -- Do not use a GPU
@@ -56,8 +58,6 @@ elseif opt.optMethod == 'nag' then optfn = optim.nag end
 if opt.manualSeed ~= -1 then torch.manualSeed(opt.manualSeed)
 else torch.seed() end
 
---- Load in annotations -------------------------------------------------------
-
 -- Load in annotations
 annotLabels = {'train', 'valid', 'test'}
 annot = {}
@@ -86,7 +86,9 @@ for idx = 1,opt.nTest do
     annot['test']['images'][idx] = idx-1
 end
 
+-- Set up logger
+log = Logger(paths.concat(opt.save, 'train.log'), false)
 
--- Default input is assumed to be an image and output is assumed to be a heatmap
--- This can change if an hdf5 file is used, or if opt.task specifies something different
+
+
 dataDim = {1, opt.inputRes, opt.inputRes}
