@@ -1,12 +1,11 @@
-
--- Default global vars
+-- Initialize default global vars
 nChannel = 1
 data = {}
 labels = {}
 dataDim = {nChannel, opt.inputRes, opt.inputRes}
 labelDim = {2}
 
--- Load data and related functions
+-- Load dataset and related functions
 
 dofile(opt.dataDir .. '/init.lua')
 
