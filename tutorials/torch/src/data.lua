@@ -38,18 +38,12 @@ data['test'] = torch.Tensor({opt.nTest, 1, opt.inputRes, opt.inputRes})
 
 
 
-
-
-
--- Allocate memory (this should stay here)
-
 -- Preallocate memory for fast GPU
 if opt.gpu ~= -1 then
     local bs = math.max(opt.batchSize,opt.testBatchSize)
     inputsGPU = torch.CudaTensor(bs, unpack(dataDim))
     labelsGPU = torch.CudaTensor(bs, 1)
 end
-
 
 -- Define some useful functions
 
@@ -67,7 +61,6 @@ function loadBatch(set, idxs)
    return preprocess(inputs, targets) -- preprocess batch if needed
 end
 
--- Define accuracy (move somewhere else)
 function accuracy(output, label)
    maxs, indices = torch.max(output, 2)
    return torch.sum(torch.eq(indices, label))/output:size()[1]

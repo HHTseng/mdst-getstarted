@@ -21,10 +21,14 @@ projectDir = '/scratch/mdatascienceteam_flux/' .. os.getenv('USER') .. '/mdst-ge
 local opts = paths.dofile('opts.lua')
 opt = opts.parse(arg)
 
-print('Saving everything to: ' .. opt.save)
-os.execute('mkdir -p ' .. opt.save)
+if not opt.evalMode then
+   print('Saving everything to: ' .. opt.save)
+   os.execute('mkdir -p ' .. opt.save)
+   torch.save(opt.save .. '/options.t7', opt)
+else
+   print('Loading model from: ' .. opt.save)
+end
 
-torch.save(opt.save .. '/options.t7', opt)
 
 if opt.gpu == -1 then
     -- Do not use a GPU
@@ -61,18 +65,27 @@ else torch.seed() end
 annot = {}
 
 -- Randomly permute examples
-local shuffle = torch.randperm(opt.nTrain)   
 
-nTrain = torch.floor(opt.nTrain * (1 - opt.validFrac))
-nValid = torch.ceil(opt.nTrain * opt.validFrac)
-annot['train'] = shuffle:narrow(1, 1, nTrain):clone()
-annot['valid'] = shuffle:narrow(1, nTrain+1, nValid):clone()
 
-print('Number of training samples:   ' .. nTrain)
-print('Number of validation samples: ' .. nValid)
+if not opt.evalMode then
+   local shuffle = torch.randperm(opt.nTrain)
 
--- Setup test set (currently unused)
-annot['test'] = {}
+   nTrain = torch.floor(opt.nTrain * (1 - opt.validFrac))
+   nValid = torch.ceil(opt.nTrain * opt.validFrac)
+   annot['train'] = shuffle:narrow(1, 1, nTrain):clone()
+   annot['valid'] = shuffle:narrow(1, nTrain+1, nValid):clone()
+
+   print('Number of training samples:   ' .. nTrain)
+   print('Number of validation samples: ' .. nValid)
+
+end
+
+-- Setup test set
+nTest = opt.nTest
+
+annot['test'] = torch.range(1, opt.nTest)
+
+print('Number of test samples:       ' .. nTest)
 
 
 -- Set up logger
