@@ -1,11 +1,18 @@
-local nTrain = annot['train']['nsamples']
-local nValid = annot['valid']['nsamples']
+-- Do some helpful initialization
+
 local batchSize = opt.batchSize
 local testBatchSize = 4 -- opt.testBatchSize
+
+local nBatchTrain = torch.floor(nTrain/batchSize)
+local nBatchValid = torch.floor(nValid/testBatchSize)
+
 local criterion = nn.CrossEntropyCriterion()
 if opt.gpu ~= -1 then
    criterion:cuda()
 end
+
+print('Training batch size: ' .. batchSize)
+print('Valid batch size:    ' .. testBatchSize)
 
 local bestValidAcc = -1
 
@@ -14,7 +21,6 @@ for epoch = 1,opt.nEpochs do
    print('Epoch ' .. epoch)
    local param, gradparam = model:getParameters()
    
-
    local trainErr = 0
    local trainAcc = 0
    local validErr = 0
@@ -27,7 +33,12 @@ for epoch = 1,opt.nEpochs do
    model:training()
    local shuffle = torch.randperm(nTrain)   
    -- Perform training iteration
-   for batch = 1,torch.floor(nTrain/batchSize) do
+
+   print(' Training...')
+   for batch = 1,nBatchTrain do
+
+      local timer = torch.Timer()
+      xlua.progress(batch, nBatchTrain)
 
       local examples = shuffle:narrow(1, (batch-1)*batchSize+1, batchSize)
       inputs, targets = loadBatch('train', examples, batchSize)
@@ -41,7 +52,7 @@ for epoch = 1,opt.nEpochs do
       local err = criterion:forward(output, targets)
 
       -- Compute loss
-      trainErr = trainErr + err / torch.floor(nTrain/batchSize)
+      trainErr = trainErr + err / nBatchTrain
 
       -- Backward step
       model:zeroGradParameters()
@@ -52,16 +63,20 @@ for epoch = 1,opt.nEpochs do
 
       -- Compute accuracy
       local acc = accuracy(output, targets)
-      trainAcc = trainAcc + acc / torch.floor(nTrain/batchSize) 
+      trainAcc = trainAcc + acc / nBatchTrain 
          
    end
-   print(string.format("      Train : Loss: %.7f Acc: %.4f"  % {trainErr, trainAcc}))
   
    -- Compute validation accuracy
    -- put model in eval mode
+   print(' Validation...')
    model:evaluate()
    local shuffle = torch.randperm(nValid)   
-   for batch = 1,torch.floor(nValid/testBatchSize) do
+   for batch = 1,nBatchValid do
+
+      local timer2 = torch.Timer()
+      xlua.progress(batch, nBatchValid)
+
       local inputs = torch.Tensor(testBatchSize, unpack(dataDim))
       local targets = torch.LongTensor(testBatchSize, 1):zero()
 
@@ -77,13 +92,15 @@ for epoch = 1,opt.nEpochs do
       local err = criterion:forward(output, targets)
 
       -- Compute loss
-      validErr = validErr + err / torch.floor(nValid/testBatchSize)
+      validErr = validErr + err / nBatchValid
 
 
       -- Compute accuracy
       local acc = accuracy(output, targets)
-      validAcc = validAcc + acc / torch.floor(nValid/testBatchSize) 
+      validAcc = validAcc + acc / nBatchValid 
    end
+
+   print(string.format("      Train : Loss: %.7f Acc: %.4f"  % {trainErr, trainAcc}))
    print(string.format("      Valid : Loss: %.7f Acc: %.4f"  % {validErr, validAcc}))
 
    if log then

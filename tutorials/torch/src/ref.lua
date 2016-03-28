@@ -9,13 +9,12 @@ require 'nnx'
 require 'nngraph'
 require 'image'
 
---paths.dofile('img.lua')
 paths.dofile('util/Logger.lua')
 
 torch.setdefaulttensortype('torch.DoubleTensor')
 
 -- Project directory
-projectDir = os.getenv('HOME') .. '/mdst-getstarted/tutorials/torch/'
+projectDir = '/scratch/mdatascienceteam_flux/' .. os.getenv('USER') .. '/mdst-getstarted/tutorials/torch/'
 
 --- Process command line options ----------------------------------------------
 
@@ -58,37 +57,23 @@ elseif opt.optMethod == 'nag' then optfn = optim.nag end
 if opt.manualSeed ~= -1 then torch.manualSeed(opt.manualSeed)
 else torch.seed() end
 
--- Load in annotations
-annotLabels = {'train', 'valid', 'test'}
+-- Set up training/validation splits
 annot = {}
 
-annot['train'] = {}
-annot['train']['nsamples'] = opt.nTrain
-annot['train']['images'] = {}
-local idx = 1
-for i = 1,opt.nTrain do
-    annot['train']['images'][i] = idx-1
-    idx = idx + 1
-end
+-- Randomly permute examples
+local shuffle = torch.randperm(opt.nTrain)   
 
-annot['valid'] = {}
-annot['valid']['nsamples'] = opt.nValid
-annot['valid']['images'] = {}
-for i = 1,opt.nValid do
-    annot['valid']['images'][i] = idx-1
-    idx = idx + 1
-end
+nTrain = torch.floor(opt.nTrain * (1 - opt.validFrac))
+nValid = torch.ceil(opt.nTrain * opt.validFrac)
+annot['train'] = shuffle:narrow(1, 1, nTrain):clone()
+annot['valid'] = shuffle:narrow(1, nTrain+1, nValid):clone()
 
+print('Number of training samples:   ' .. nTrain)
+print('Number of validation samples: ' .. nValid)
+
+-- Setup test set (currently unused)
 annot['test'] = {}
-annot['test']['nsamples'] = opt.nTest
-annot['test']['images'] = {}
-for idx = 1,opt.nTest do
-    annot['test']['images'][idx] = idx-1
-end
+
 
 -- Set up logger
 log = Logger(paths.concat(opt.save, 'train.log'), false)
-
-
-
-dataDim = {1, opt.inputRes, opt.inputRes}
