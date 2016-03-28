@@ -16,7 +16,7 @@ print('Valid batch size:    ' .. testBatchSize)
 
 local bestValidAcc = -1
 
-for epoch = 1,opt.nEpochs do
+for epoch = 0,opt.nEpochs do
 
    print('Epoch ' .. epoch)
    local param, gradparam = model:getParameters()
@@ -34,42 +34,46 @@ for epoch = 1,opt.nEpochs do
    local shuffle = torch.randperm(nTrain)   
    -- Perform training iteration
 
-   print(' Training...')
-   for batch = 1,nBatchTrain do
+   if epoch > 0 then
+      print(' Training...')
+      for batch = 1,nBatchTrain do
 
-      local timer = torch.Timer()
-      xlua.progress(batch, nBatchTrain)
+	 local timer = torch.Timer()
+	 xlua.progress(batch, nBatchTrain)
 
-      local examples = shuffle:narrow(1, (batch-1)*batchSize+1, batchSize)
-      inputs, targets = loadBatch('train', examples, batchSize)
-      if opt.gpu ~= -1 then
-         inputs = inputsGPU:sub(1,batchSize):copy(inputs)
-	 targets = labelsGPU:sub(1,batchSize):copy(targets)
+	 local examples = shuffle:narrow(1, (batch-1)*batchSize+1, batchSize)
+	 inputs, targets = loadBatch('train', examples, batchSize)
+	 if opt.gpu ~= -1 then
+	    inputs = inputsGPU:sub(1,batchSize):copy(inputs)
+	    targets = labelsGPU:sub(1,batchSize):copy(targets)
+	 end
+
+	 -- Forward step
+	 local output = model:forward(inputs)
+	 local err = criterion:forward(output, targets)
+
+	 -- Compute loss
+	 trainErr = trainErr + err / nBatchTrain
+
+	 -- Backward step
+	 model:zeroGradParameters()
+	 model:backward(inputs, criterion:backward(output, targets))
+
+	 local function evalFn(x) return err, gradparam end
+	 optfn(evalFn, param, optimState)
+
+	 -- Compute accuracy
+	 local acc = accuracy(output, targets)
+	 trainAcc = trainAcc + acc / nBatchTrain 
+
       end
-
-      -- Forward step
-      local output = model:forward(inputs)
-      local err = criterion:forward(output, targets)
-
-      -- Compute loss
-      trainErr = trainErr + err / nBatchTrain
-
-      -- Backward step
-      model:zeroGradParameters()
-      model:backward(inputs, criterion:backward(output, targets))
-
-      local function evalFn(x) return err, gradparam end
-      optfn(evalFn, param, optimState)
-
-      -- Compute accuracy
-      local acc = accuracy(output, targets)
-      trainAcc = trainAcc + acc / nBatchTrain 
-         
    end
-  
+
+
    -- Compute validation accuracy
-   -- put model in eval mode
    print(' Validation...')
+   
+   -- put model in eval mode
    model:evaluate()
    local shuffle = torch.randperm(nValid)   
    for batch = 1,nBatchValid do
