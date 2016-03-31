@@ -13,7 +13,7 @@ paths.dofile('util/Logger.lua')
 
 torch.setdefaulttensortype('torch.DoubleTensor')
 
--- Project directory
+-- Set default project directory
 projectDir = '/scratch/mdatascienceteam_flux/' .. os.getenv('USER') .. '/mdst-getstarted/tutorials/torch/'
 
 --- Process command line options ----------------------------------------------
@@ -42,7 +42,7 @@ else
     cutorch.setDevice(opt.gpu) -- by default, use GPU 1
 end
 
--- Training hyperparameters
+-- Initialize training hyperparameters
 if not optimState then
     optimState = {
         learningRate = opt.LR,
@@ -61,11 +61,23 @@ elseif opt.optMethod == 'nag' then optfn = optim.nag end
 if opt.manualSeed ~= -1 then torch.manualSeed(opt.manualSeed)
 else torch.seed() end
 
--- Set up training/validation splits
-annot = {}
+-- Initialize a few data-related things
+if opt.nTrain == -1 then opt.nTrain = false end
+if opt.nTest == -1 then opt.nTest = false end
+
+-- TODO: move this over to data/init.lua
+if opt.dataset == 'fars' then 
+   opt.nTrain = opt.nTrain or 273000
+   opt.nTest = opt.nTest or 100000
+elseif opt.dataset == 'mnist' then
+   opt.nTrain = opt.nTrain or 60000
+   opt.nTest = opt.nTest or 10000
+else
+   -- TODO
+end
 
 -- Randomly permute examples
-
+annot = {}
 
 if not opt.evalMode then
    local shuffle = torch.randperm(opt.nTrain)
@@ -82,11 +94,10 @@ end
 
 -- Setup test set
 nTest = opt.nTest
-
 annot['test'] = torch.range(1, opt.nTest)
-
 print('Number of test samples:       ' .. nTest)
 
 
 -- Set up logger
 log = Logger(paths.concat(opt.save, 'train.log'), false)
+

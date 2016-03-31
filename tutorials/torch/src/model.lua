@@ -44,13 +44,13 @@ model:add(convModule(opt.nHidden2, opt.nHidden3, opt.filterSize, 1, 2))
 local nFeat = opt.nHidden3 * 5 * 5
 
 model:add(nn.View(nFeat))
-
 model:add(linearModule(nFeat, opt.nHidden4))
 model:add(linearModule(opt.nHidden4, opt.nHidden5))
-
 model:add(nn.Linear(opt.nHidden5, nLabel))
 model:add(nnlib.Sigmoid())
 model:add(nnlib.SoftMax())
+
+
 
 if opt.gpu ~= -1 then
    model:cuda()
