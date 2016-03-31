@@ -70,7 +70,9 @@ state-of-the-art accuracy just yet.
 
 #### 5. Evaluate your model
 
-TODO
+```
+$ th main.lua -evalMode
+```
 
 ## Convolutional Neural Networks (CNNs)
 
@@ -78,11 +80,17 @@ TODO
 
 ## Training and Evaluation Options
 
-TODO
+You can view command line arguments using the `-h` flag, as follows:
+
+```
+$ th main.lua -h 
+```
 
 ## Specifying New Network Architectures
 
-TODO
+Some aspects of the network structure (filter size, number of hidden
+units, etc.) can be changed via command-line arguments. To build new
+network architectures from scratch, edit `model.lua`.
 
 ## Importing Datasets
 
