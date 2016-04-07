@@ -23,6 +23,10 @@ $ cd data
 $ ./download.sh
 ```
 
+If the download script fails, try [this
+link](https://umich.box.com/s/00omi84pdu28vm3r5xjlfofy78i353zk)
+instead.
+
 From back in the source directory, open the ipython notebook:
 
 ```
@@ -52,6 +56,7 @@ plans for the visualization challenge. Soon after the meeting, we'll
 send out a sign-up sheet for you to rank your preferences.
 
 Presentation date: 5/12 (Tentative)
+
 Prizes: TBD
 
 
