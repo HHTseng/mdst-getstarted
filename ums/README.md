@@ -31,9 +31,27 @@ $ jupyter notebook ums_vis_explore_incomplete.ipynb
 
 ## Visualization Challenge
 
+Before we make a prediction challenge out of this data, we have to
+figure out what prediction tasks are worth solving. In the first phase
+of this project, we will be exploring three out of the five years of
+data, with the goal of identifying interesting and challenging
+prediction tasks. Similar to past competitions, we'll split into small
+groups and explore different aspects of the dataset, and then present
+our results in a visualization challenge at our group meeting.
 
+Unlike past competitions, we will be assigning you to teams. Four MDST
+veterans have been chosen as Team Captains:
 
+* Jared Webb (`jaredaw`)
+* Jonathan Stroud (`stroud`)
+* Guangsha Shi (`guangsha`)
+* Chengyu Dai (`daich`)
 
+During the kick-off meeting (4/7), each team captain will pitch their
+plans for the visualization challenge. Soon after the meeting, we'll
+send out a sign-up sheet for you to rank your preferences.
+
+Presentation date: 5/12 (Tentative)
 Prizes: TBD
 
 
