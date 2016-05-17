@@ -33,8 +33,9 @@ $ ./download.sh
 
 #### 2. Start an interactive job
 
-See the [flux tutorial](http://torch.ch/docs/getting-started.html) for
-a guide on running jobs on Flux.
+See the [flux
+tutorial](https://github.com/MichiganDataScienceTeam/mdst-getstarted/tree/master/flux)
+for a guide on running jobs on Flux.
 
 #### 3. Load Torch
 
