@@ -1,6 +1,6 @@
-## mdatascienceteam_flux
+## MDST & Flux
 
-Resources and Flux info for MDST members
+HPC resources and Flux info for MDST members
 
 Email Jonathan (stroud@umich.edu) with any questions.
 
@@ -18,10 +18,28 @@ account on Flux. From now until 10/23/2016, we have access to the
 following resources:
 
 ```
+mdatascienceteam_flux
 CPUs:		250
 Memory:		1TB
+Queue:          preempt
 Scratch space:  /scratch/mdatascienceteam_flux/
 ```
+
+In addition, we have two NVIDIA K40 GPUs (donation of these GPUs by
+NVIDIA is graciously acknowledged) available for special projects that
+require additional processing power. Unlike the CPU allocation, not
+everyone on MDST has access to these GPUs by default. To gain access,
+email Jonathan (stroud@umich.edu).
+
+```
+mdstproject_fluxg
+GPUs:           2
+CPUs:		4
+Memory:		16GB
+Queue:          fluxg
+Scratch space:  /scratch/mdstproject_fluxg/
+```
+
 
 ### Logging In
 
