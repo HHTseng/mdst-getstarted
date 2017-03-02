@@ -14,22 +14,21 @@ Email Jonathan (stroud@umich.edu) with any questions.
 ### Our Allocation
 
 Everyone on MDST has access to the `mdatascienceteam_flux` allocation
-account on Flux. From now until 10/23/2016, we have access to the
-following resources:
+account on Flux.
 
 ```
 mdatascienceteam_flux
-CPUs:		250
-Memory:		1TB
+CPUs:		1000
+Memory:		4TB
 Queue:          preempt
 Scratch space:  /scratch/mdatascienceteam_flux/
 ```
 
-In addition, we have two NVIDIA K40 GPUs (donation of these GPUs by
-NVIDIA is graciously acknowledged) available for special projects that
-require additional processing power. Unlike the CPU allocation, not
+In addition, we have two NVIDIA K40 GPUs (we graciously acknowledge
+donation of these GPUs by NVIDIA) available for special projects that
+require additional computing resources. Unlike the CPU allocation, not
 everyone on MDST has access to these GPUs by default. To gain access,
-email Jonathan (stroud@umich.edu).
+message Jonathan (@stroud) on Slack.
 
 ```
 mdstproject_fluxg
@@ -40,14 +39,13 @@ Queue:          fluxg
 Scratch space:  /scratch/mdstproject_fluxg/
 ```
 
-
 ### Logging In
 
 In order to access Flux, you must first do the following:
 
 1. Create a flux account [here](https://arc-ts.umich.edu/fluxform/)
 and obtain an MToken
-2. Email Jonathan (stroud@umich.edu) and ask to be added to the
+2. Message Jonathan (@stroud) and ask to be added to the
 `mdatascienceteam_flux` account
 
 Once you've done both of these things, open a terminal window and
